@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: sh-budget-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sh_budget
+      MYSQL_USER: sh_budget
+      MYSQL_PASSWORD: 123456
+      TZ: Asia/Seoul
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    restart: unless-stopped
+
+volumes:
+  mysql-data:

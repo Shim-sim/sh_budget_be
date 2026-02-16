@@ -1,7 +1,9 @@
 package com.shbudget.global.exception;
 
-import com.shbudget.global.common.ApiResponse;
+import com.shbudget.global.common.ApiResult;
+import com.shbudget.global.common.ResponseStatus;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -10,26 +12,34 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ApiResponse<Void> handleCustomException(CustomException e) {
+    public ResponseEntity<ApiResult<Void>> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
-        return ApiResponse.error(errorCode.getStatus(), errorCode.getMessage());
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(ApiResult.error(errorCode.getStatus(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResponse<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiResult<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().isEmpty()
-                ? "잘못된 입력입니다."
+                ? ResponseStatus.BAD_REQUEST.getMessage()
                 : e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
-        return ApiResponse.error(400, message);
+        return ResponseEntity
+                .status(ResponseStatus.BAD_REQUEST.getHttpStatus())
+                .body(ApiResult.of(ResponseStatus.BAD_REQUEST, message, null));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ApiResponse<Void> handleConstraintViolationException(ConstraintViolationException e) {
-        return ApiResponse.error(400, "잘못된 입력입니다.");
+    public ResponseEntity<ApiResult<Void>> handleConstraintViolationException(ConstraintViolationException e) {
+        return ResponseEntity
+                .status(ResponseStatus.BAD_REQUEST.getHttpStatus())
+                .body(ApiResult.of(ResponseStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(Exception.class)
-    public ApiResponse<Void> handleException(Exception e) {
-        return ApiResponse.error(500, "서버 오류가 발생했습니다.");
+    public ResponseEntity<ApiResult<Void>> handleException(Exception e) {
+        return ResponseEntity
+                .status(ResponseStatus.INTERNAL_SERVER_ERROR.getHttpStatus())
+                .body(ApiResult.of(ResponseStatus.INTERNAL_SERVER_ERROR));
     }
 }

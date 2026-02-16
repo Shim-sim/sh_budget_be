@@ -25,10 +25,11 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	// OAuth2는 추후 Phase에서 추가 예정
+	// implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
@@ -40,7 +41,10 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-test-autoconfigure'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 	testRuntimeOnly 'com.h2database:h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
