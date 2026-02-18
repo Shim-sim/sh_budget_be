@@ -1,5 +1,6 @@
 package com.shbudget.domain.member.service;
 
+import com.shbudget.domain.book.service.BookService;
 import com.shbudget.domain.member.dto.request.MemberCreateRequest;
 import com.shbudget.domain.member.dto.request.MemberUpdateRequest;
 import com.shbudget.domain.member.dto.response.MemberResponse;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BookService bookService;
 
     @Transactional
     public MemberResponse createMember(MemberCreateRequest request) {
@@ -25,8 +27,11 @@ public class MemberService {
         }
 
         Member member = Member.create(request.email(), request.nickname());
-
         Member savedMember = memberRepository.save(member);
+
+        String bookName = savedMember.getNickname() + "의 가계부";
+        bookService.createBookForMember(savedMember.getId(), bookName);
+
         return MemberResponse.from(savedMember);
     }
 

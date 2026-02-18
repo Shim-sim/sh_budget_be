@@ -18,6 +18,14 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(404, "회원을 찾을 수 없습니다."),
     DUPLICATE_EMAIL(409, "이미 존재하는 이메일입니다."),
 
+    // Book
+    BOOK_NOT_FOUND(404, "가계부를 찾을 수 없습니다."),
+    INVALID_INVITE_CODE(400, "유효하지 않은 초대 코드입니다."),
+    ALREADY_JOINED_BOOK(409, "이미 가계부에 참여 중입니다."),
+    NOT_BOOK_MEMBER(403, "가계부 멤버가 아닙니다."),
+    NOT_BOOK_OWNER(403, "가계부 소유자만 수행할 수 있습니다."),
+    OWNER_CANNOT_LEAVE(400, "소유자는 가계부를 탈퇴할 수 없습니다."),
+
     // Transaction
     TRANSACTION_NOT_FOUND(404, "거래 내역을 찾을 수 없습니다."),
 
