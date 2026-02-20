@@ -26,6 +26,10 @@ public enum ErrorCode {
     NOT_BOOK_OWNER(403, "가계부 소유자만 수행할 수 있습니다."),
     OWNER_CANNOT_LEAVE(400, "소유자는 가계부를 탈퇴할 수 없습니다."),
 
+    // Asset
+    ASSET_NOT_FOUND(404, "자산을 찾을 수 없습니다."),
+    ASSET_HAS_TRANSACTIONS(400, "거래 내역이 있는 자산은 삭제할 수 없습니다."),
+
     // Transaction
     TRANSACTION_NOT_FOUND(404, "거래 내역을 찾을 수 없습니다."),
 
