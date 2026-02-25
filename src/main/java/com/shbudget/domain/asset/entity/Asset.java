@@ -58,4 +58,14 @@ public class Asset extends BaseEntity {
         }
         this.ownerMemberId = ownerMemberId;
     }
+
+    // 잔액 증가 (수입, 이체 입금)
+    public void increaseBalance(Long amount) {
+        this.balance += amount;
+    }
+
+    // 잔액 감소 (지출, 이체 출금)
+    public void decreaseBalance(Long amount) {
+        this.balance -= amount;
+    }
 }

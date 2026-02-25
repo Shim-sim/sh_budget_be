@@ -32,9 +32,18 @@ public enum ErrorCode {
 
     // Transaction
     TRANSACTION_NOT_FOUND(404, "거래 내역을 찾을 수 없습니다."),
+    INSUFFICIENT_BALANCE(400, "잔액이 부족합니다."),
+    SAME_ASSET_TRANSFER(400, "같은 자산으로 이체할 수 없습니다."),
+    INVALID_TRANSACTION_TYPE(400, "유효하지 않은 거래 타입입니다."),
+    INVALID_AMOUNT(400, "금액은 0보다 커야 합니다."),
+    FUTURE_DATE_NOT_ALLOWED(400, "미래 날짜는 입력할 수 없습니다."),
+    ASSET_REQUIRED_FOR_INCOME_EXPENSE(400, "수입/지출은 자산 ID가 필수입니다."),
+    ASSETS_REQUIRED_FOR_TRANSFER(400, "이체는 출발/도착 자산 ID가 필수입니다."),
 
     // Category
-    CATEGORY_NOT_FOUND(404, "카테고리를 찾을 수 없습니다.");
+    CATEGORY_NOT_FOUND(404, "카테고리를 찾을 수 없습니다."),
+    DUPLICATE_CATEGORY_NAME(409, "이미 존재하는 카테고리 이름입니다."),
+    CATEGORY_HAS_TRANSACTIONS(400, "거래 내역이 있는 카테고리는 삭제할 수 없습니다.");
 
     private final int status;
     private final String message;
