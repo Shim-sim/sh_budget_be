@@ -65,4 +65,29 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    // 카테고리별 지출 통계 (기간별)
+    @Query("SELECT t.categoryId, COALESCE(SUM(t.amount), 0), COUNT(t) FROM Transaction t " +
+            "WHERE t.bookId = :bookId AND t.type = :type " +
+            "AND t.categoryId IS NOT NULL " +
+            "AND t.date BETWEEN :startDate AND :endDate " +
+            "GROUP BY t.categoryId")
+    List<Object[]> sumAmountByCategoryAndDateBetween(
+            @Param("bookId") Long bookId,
+            @Param("type") TransactionType type,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    // 멤버별 타입별 합계 (기간별)
+    @Query("SELECT t.createdBy, COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+            "WHERE t.bookId = :bookId AND t.type = :type " +
+            "AND t.date BETWEEN :startDate AND :endDate " +
+            "GROUP BY t.createdBy")
+    List<Object[]> sumAmountByMemberAndTypeAndDateBetween(
+            @Param("bookId") Long bookId,
+            @Param("type") TransactionType type,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }
