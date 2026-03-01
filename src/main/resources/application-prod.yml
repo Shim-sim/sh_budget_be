@@ -38,4 +38,7 @@ logging:
     com.shbudget: INFO
 
 server:
-  port: 8080
+  port: ${PORT:8080}
+
+api:
+  secret-key: ${API_SECRET_KEY:}
