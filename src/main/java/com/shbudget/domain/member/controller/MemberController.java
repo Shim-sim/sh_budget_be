@@ -54,6 +54,20 @@ public class MemberController {
         return ResponseEntity.ok(ApiResult.of(ResponseStatus.SUCCESS, response));
     }
 
+    @GetMapping("/by-email")
+    @Operation(summary = "이메일로 회원 조회", description = "이메일로 회원을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음")
+    })
+    public ResponseEntity<ApiResult<MemberResponse>> getMemberByEmail(
+            @Parameter(description = "이메일", required = true)
+            @RequestParam String email
+    ) {
+        MemberResponse response = memberService.findByEmail(email);
+        return ResponseEntity.ok(ApiResult.of(ResponseStatus.SUCCESS, response));
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "회원 정보 수정", description = "회원의 프로필 정보를 수정합니다.")
     @ApiResponses({
