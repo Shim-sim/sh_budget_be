@@ -2,13 +2,14 @@ package com.shbudget.domain.book.service;
 
 import com.shbudget.domain.book.dto.BookResponse;
 import com.shbudget.domain.book.dto.BookUpdateRequest;
+import com.shbudget.domain.book.dto.BookWithRoleResponse;
 import com.shbudget.domain.book.entity.Book;
 import com.shbudget.domain.book.entity.BookMember;
-import com.shbudget.domain.book.entity.BookMemberRole;
 import com.shbudget.domain.book.repository.BookMemberRepository;
 import com.shbudget.domain.book.repository.BookRepository;
 import com.shbudget.global.exception.CustomException;
 import com.shbudget.global.exception.ErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,14 +35,43 @@ public class BookService {
         return BookResponse.from(savedBook);
     }
 
-    public BookResponse getMyBook(Long memberId) {
-        BookMember bookMember = bookMemberRepository.findByMemberIdAndRole(memberId, BookMemberRole.OWNER)
+    public BookResponse getMyBook(Long memberId, Long bookId) {
+        if (bookId != null) {
+            // bookId 지정 시: 멤버십 검증 후 해당 가계부 반환
+            bookMemberRepository.findByBookIdAndMemberId(bookId, memberId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_BOOK_MEMBER));
+
+            Book book = bookRepository.findById(bookId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
+
+            return BookResponse.from(book);
+        }
+
+        // bookId 미지정: 기존 로직 (MEMBER 우선, 없으면 OWNER)
+        List<BookMember> memberships = bookMemberRepository.findAllByMemberId(memberId);
+
+        BookMember bookMember = memberships.stream()
+                .filter(BookMember::isMember)
+                .findFirst()
+                .or(() -> memberships.stream().filter(BookMember::isOwner).findFirst())
                 .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
 
         Book book = bookRepository.findById(bookMember.getBookId())
                 .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
 
         return BookResponse.from(book);
+    }
+
+    public List<BookWithRoleResponse> getAllMyBooks(Long memberId) {
+        List<BookMember> memberships = bookMemberRepository.findAllByMemberId(memberId);
+
+        return memberships.stream()
+                .map(membership -> {
+                    Book book = bookRepository.findById(membership.getBookId())
+                            .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
+                    return BookWithRoleResponse.from(book, membership.getRole());
+                })
+                .toList();
     }
 
     @Transactional

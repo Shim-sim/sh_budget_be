@@ -4,6 +4,7 @@ import com.shbudget.domain.book.dto.BookJoinRequest;
 import com.shbudget.domain.book.dto.BookMemberResponse;
 import com.shbudget.domain.book.dto.BookResponse;
 import com.shbudget.domain.book.dto.BookUpdateRequest;
+import com.shbudget.domain.book.dto.BookWithRoleResponse;
 import com.shbudget.domain.book.service.BookMemberService;
 import com.shbudget.domain.book.service.BookService;
 import com.shbudget.global.common.ApiResult;
@@ -29,15 +30,30 @@ public class BookController {
     private final BookMemberService bookMemberService;
 
     @GetMapping("/my")
-    @Operation(summary = "내 가계부 조회", description = "현재 사용자의 가계부를 조회합니다.")
+    @Operation(summary = "내 가계부 조회", description = "현재 사용자의 가계부를 조회합니다. bookId를 지정하면 해당 가계부를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "가계부 없음")
     })
     public ResponseEntity<ApiResult<BookResponse>> getMyBook(
+            @RequestHeader("X-Member-Id") Long memberId,
+            @RequestParam(required = false) Long bookId
+    ) {
+        BookResponse response = bookService.getMyBook(memberId, bookId);
+        return ResponseEntity
+                .status(ResponseStatus.SUCCESS.getHttpStatus())
+                .body(ApiResult.of(ResponseStatus.SUCCESS, response));
+    }
+
+    @GetMapping("/my/all")
+    @Operation(summary = "내 가계부 전체 목록 조회", description = "소유 및 참여 중인 모든 가계부를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    public ResponseEntity<ApiResult<List<BookWithRoleResponse>>> getAllMyBooks(
             @RequestHeader("X-Member-Id") Long memberId
     ) {
-        BookResponse response = bookService.getMyBook(memberId);
+        List<BookWithRoleResponse> response = bookService.getAllMyBooks(memberId);
         return ResponseEntity
                 .status(ResponseStatus.SUCCESS.getHttpStatus())
                 .body(ApiResult.of(ResponseStatus.SUCCESS, response));
