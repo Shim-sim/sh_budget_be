@@ -9,14 +9,17 @@ import com.shbudget.domain.asset.repository.AssetRepository;
 import com.shbudget.domain.book.repository.BookMemberRepository;
 import com.shbudget.domain.member.entity.Member;
 import com.shbudget.domain.member.repository.MemberRepository;
+import com.shbudget.domain.pushsubscription.service.NotificationService;
 import com.shbudget.global.exception.CustomException;
 import com.shbudget.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -25,6 +28,7 @@ public class AssetService {
     private final AssetRepository assetRepository;
     private final BookMemberRepository bookMemberRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public AssetResponse createAsset(Long memberId, Long bookId, AssetCreateRequest request) {
@@ -38,6 +42,16 @@ public class AssetService {
 
         Asset asset = Asset.create(bookId, request.name(), request.balance(), request.ownerMemberId());
         Asset savedAsset = assetRepository.save(asset);
+
+        // 푸시 알림
+        try {
+            String nickname = memberRepository.findById(memberId)
+                    .map(Member::getNickname).orElse("누군가");
+            String body = nickname + "님이 자산 '" + request.name() + "'을(를) 추가했습니다.";
+            notificationService.notifyBookMembers(bookId, memberId, "가계부 알림", body);
+        } catch (Exception e) {
+            log.warn("Push notification failed", e);
+        }
 
         return buildAssetResponse(savedAsset);
     }

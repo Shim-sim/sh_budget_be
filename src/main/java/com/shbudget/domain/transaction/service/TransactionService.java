@@ -5,6 +5,7 @@ import com.shbudget.domain.asset.repository.AssetRepository;
 import com.shbudget.domain.book.repository.BookMemberRepository;
 import com.shbudget.domain.member.entity.Member;
 import com.shbudget.domain.member.repository.MemberRepository;
+import com.shbudget.domain.pushsubscription.service.NotificationService;
 import com.shbudget.domain.transaction.dto.request.TransactionCreateRequest;
 import com.shbudget.domain.transaction.dto.request.TransactionUpdateRequest;
 import com.shbudget.domain.transaction.dto.response.TransactionResponse;
@@ -14,6 +15,7 @@ import com.shbudget.domain.transaction.repository.TransactionRepository;
 import com.shbudget.global.exception.CustomException;
 import com.shbudget.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,6 +33,7 @@ public class TransactionService {
     private final AssetRepository assetRepository;
     private final BookMemberRepository bookMemberRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public TransactionResponse createTransaction(Long memberId, TransactionCreateRequest request) {
@@ -39,11 +43,28 @@ public class TransactionService {
         validateDate(request.date());
 
         // 타입별 생성 로직
-        return switch (request.type()) {
+        TransactionResponse response = switch (request.type()) {
             case INCOME -> createIncome(memberId, request);
             case EXPENSE -> createExpense(memberId, request);
             case TRANSFER -> createTransfer(memberId, request);
         };
+
+        // 푸시 알림
+        try {
+            String nickname = memberRepository.findById(memberId)
+                    .map(Member::getNickname).orElse("누군가");
+            String typeLabel = switch (request.type()) {
+                case INCOME -> "수입";
+                case EXPENSE -> "지출";
+                case TRANSFER -> "이체";
+            };
+            String body = nickname + "님이 " + typeLabel + " " + String.format("%,d", request.amount()) + "원을 등록했습니다.";
+            notificationService.notifyBookMembers(request.bookId(), memberId, "가계부 알림", body);
+        } catch (Exception e) {
+            log.warn("Push notification failed", e);
+        }
+
+        return response;
     }
 
     private TransactionResponse createIncome(Long memberId, TransactionCreateRequest request) {

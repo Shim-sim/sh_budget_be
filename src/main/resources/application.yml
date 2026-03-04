@@ -43,3 +43,7 @@ spring:
 
 server:
   port: 8080
+
+vapid:
+  public-key: ${VAPID_PUBLIC_KEY:BGFpj_HUY1VXadA0_joU3bOa1McoDrL-YyJWfafp_WOtEx4kS8RpKPpjlVX6lsSfhxOjy9-Myp3jhKsfq8xHI1Q}
+  private-key: ${VAPID_PRIVATE_KEY:qZPwHI4tDdv003gG1v4I1xMngD0AMA32uUUAuvqwKBQ}
