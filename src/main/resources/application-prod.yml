@@ -19,3 +19,7 @@ server:
 
 api:
   secret-key: ${API_SECRET_KEY:}
+
+vapid:
+  public-key: ${VAPID_PUBLIC_KEY:}
+  private-key: ${VAPID_PRIVATE_KEY:}
