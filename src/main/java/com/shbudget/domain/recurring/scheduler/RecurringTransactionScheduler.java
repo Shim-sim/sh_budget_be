@@ -32,33 +32,26 @@ public class RecurringTransactionScheduler {
     private final WebPushService webPushService;
 
     /**
-     * 매일 00:05 실행 - 오늘 날짜에 해당하는 반복 거래 자동 생성
-     * 월말 처리: 설정일이 해당 월의 마지막 날보다 크면 마지막 날에 실행
-     * (예: 31일 설정 → 2월은 28/29일, 4월은 30일에 실행)
+     * 매월 1일 21:00 실행 - 활성화된 모든 반복 거래를 해당 월 설정일로 자동 생성
+     * 월말 처리: 설정일이 해당 월의 마지막 날보다 크면 마지막 날로 등록
+     * (예: 31일 설정 → 2월은 28/29일, 4월은 30일로 등록)
      */
-    @Scheduled(cron = "0 5 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 21 1 * *", zone = "Asia/Seoul")
     public void executeRecurringTransactions() {
         LocalDate today = LocalDate.now();
-        int todayDay = today.getDayOfMonth();
         int lastDayOfMonth = YearMonth.from(today).lengthOfMonth();
 
-        // 1) 정확히 오늘 날짜와 일치하는 반복 거래
-        List<RecurringTransaction> targets = new ArrayList<>(
-                recurringRepository.findAllByDayOfMonthAndActiveTrue(todayDay)
-        );
+        // 활성화된 모든 반복 거래 조회
+        List<RecurringTransaction> targets = recurringRepository.findAllByActiveTrue();
 
-        // 2) 월말 처리: 오늘이 이번 달 마지막 날이면, 설정일이 마지막 날보다 큰 것들도 실행
-        //    예: 2월 28일(마지막 날)이면 dayOfMonth가 29, 30, 31인 것들도 실행
-        if (todayDay == lastDayOfMonth && lastDayOfMonth < 31) {
-            List<RecurringTransaction> overflows =
-                    recurringRepository.findAllByDayOfMonthGreaterThanEqualAndActiveTrue(lastDayOfMonth + 1);
-            targets.addAll(overflows);
-        }
-
-        log.info("[반복 거래] 실행 시작 - 날짜: {}, 대상: {}건", today, targets.size());
+        log.info("[반복 거래] 실행 시작 - 월: {}, 대상: {}건", today.getMonth(), targets.size());
 
         for (RecurringTransaction recurring : targets) {
             try {
+                // 설정일이 해당 월 마지막 날보다 크면 마지막 날로 조정
+                int actualDay = Math.min(recurring.getDayOfMonth(), lastDayOfMonth);
+                LocalDate transactionDate = today.withDayOfMonth(actualDay);
+
                 TransactionCreateRequest request = new TransactionCreateRequest(
                         recurring.getBookId(),
                         recurring.getType(),
@@ -67,12 +60,12 @@ public class RecurringTransactionScheduler {
                         recurring.getFromAssetId(),
                         recurring.getToAssetId(),
                         recurring.getAmount(),
-                        today,
+                        transactionDate,
                         recurring.getMemo()
                 );
                 transactionService.createTransaction(recurring.getCreatedBy(), request);
-                log.info("[반복 거래] 생성 완료 - id: {}, type: {}, amount: {}",
-                        recurring.getId(), recurring.getType(), recurring.getAmount());
+                log.info("[반복 거래] 생성 완료 - id: {}, type: {}, amount: {}, date: {}",
+                        recurring.getId(), recurring.getType(), recurring.getAmount(), transactionDate);
             } catch (Exception e) {
                 log.error("[반복 거래] 생성 실패 - id: {}, error: {}", recurring.getId(), e.getMessage());
             }

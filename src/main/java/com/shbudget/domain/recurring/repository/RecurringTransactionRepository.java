@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface RecurringTransactionRepository extends JpaRepository<RecurringTransaction, Long> {
 
+    List<RecurringTransaction> findAllByActiveTrue();
+
     List<RecurringTransaction> findAllByBookIdAndActiveTrue(Long bookId);
 
     List<RecurringTransaction> findAllByDayOfMonthAndActiveTrue(Integer dayOfMonth);
