@@ -40,7 +40,6 @@ public class TransactionService {
         // 공통 검증
         validateBookMember(request.bookId(), memberId);
         validateAmount(request.amount());
-        validateDate(request.date());
 
         // 타입별 생성 로직
         TransactionResponse response = switch (request.type()) {
@@ -212,11 +211,6 @@ public class TransactionService {
             validateAmount(request.amount());
         }
 
-        // 날짜 검증
-        if (request.date() != null) {
-            validateDate(request.date());
-        }
-
         // 기존 자산 잔액 복구
         restoreBalance(transaction);
 
@@ -269,12 +263,6 @@ public class TransactionService {
     private void validateAmount(Long amount) {
         if (amount <= 0) {
             throw new CustomException(ErrorCode.INVALID_AMOUNT);
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date.isAfter(LocalDate.now())) {
-            throw new CustomException(ErrorCode.FUTURE_DATE_NOT_ALLOWED);
         }
     }
 
