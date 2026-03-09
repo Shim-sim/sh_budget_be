@@ -80,10 +80,10 @@ public class RecurringTransactionScheduler {
     }
 
     /**
-     * 매일 00:10 실행 - 이틀 후 예정된 반복 거래에 대해 알림 발송
+     * 매일 21:00 실행 - 이틀 후 예정된 반복 거래에 대해 알림 발송
      * 월말 처리 동일 적용
      */
-    @Scheduled(cron = "0 10 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 21 * * *", zone = "Asia/Seoul")
     public void notifyUpcomingRecurringTransactions() {
         LocalDate twoDaysLater = LocalDate.now().plusDays(2);
         int targetDay = twoDaysLater.getDayOfMonth();
