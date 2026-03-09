@@ -3,6 +3,8 @@ package com.shbudget.domain.transaction.service;
 import com.shbudget.domain.asset.entity.Asset;
 import com.shbudget.domain.asset.repository.AssetRepository;
 import com.shbudget.domain.book.repository.BookMemberRepository;
+import com.shbudget.domain.category.entity.Category;
+import com.shbudget.domain.category.repository.CategoryRepository;
 import com.shbudget.domain.member.entity.Member;
 import com.shbudget.domain.member.repository.MemberRepository;
 import com.shbudget.domain.pushsubscription.service.NotificationService;
@@ -31,6 +33,7 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AssetRepository assetRepository;
+    private final CategoryRepository categoryRepository;
     private final BookMemberRepository bookMemberRepository;
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
@@ -332,11 +335,15 @@ public class TransactionService {
                 ? assetRepository.findById(transaction.getAssetId()).map(Asset::getName).orElse(null)
                 : null;
 
+        String categoryName = transaction.getCategoryId() != null
+                ? categoryRepository.findById(transaction.getCategoryId()).map(Category::getName).orElse(null)
+                : null;
+
         String createdByNickname = memberRepository.findById(transaction.getCreatedBy())
                 .map(Member::getNickname)
                 .orElse(null);
 
-        return TransactionResponse.from(transaction, assetName, null, createdByNickname);
+        return TransactionResponse.from(transaction, assetName, categoryName, createdByNickname);
     }
 
     private TransactionResponse buildTransferResponse(Transaction transaction) {
