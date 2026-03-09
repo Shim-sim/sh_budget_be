@@ -7,6 +7,7 @@ import com.shbudget.domain.book.dto.BookUpdateRequest;
 import com.shbudget.domain.book.dto.BookWithRoleResponse;
 import com.shbudget.domain.book.service.BookMemberService;
 import com.shbudget.domain.book.service.BookService;
+import com.shbudget.global.auth.CurrentMemberId;
 import com.shbudget.global.common.ApiResult;
 import com.shbudget.global.common.ResponseStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +37,7 @@ public class BookController {
             @ApiResponse(responseCode = "404", description = "가계부 없음")
     })
     public ResponseEntity<ApiResult<BookResponse>> getMyBook(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @RequestParam(required = false) Long bookId
     ) {
         BookResponse response = bookService.getMyBook(memberId, bookId);
@@ -51,7 +52,7 @@ public class BookController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     public ResponseEntity<ApiResult<List<BookWithRoleResponse>>> getAllMyBooks(
-            @RequestHeader("X-Member-Id") Long memberId
+            @CurrentMemberId Long memberId
     ) {
         List<BookWithRoleResponse> response = bookService.getAllMyBooks(memberId);
         return ResponseEntity
@@ -69,7 +70,7 @@ public class BookController {
     })
     public ResponseEntity<ApiResult<BookResponse>> updateBook(
             @PathVariable Long id,
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Valid @RequestBody BookUpdateRequest request
     ) {
         BookResponse response = bookService.updateBook(id, memberId, request);
@@ -87,7 +88,7 @@ public class BookController {
     })
     public ResponseEntity<ApiResult<BookResponse>> regenerateInviteCode(
             @PathVariable Long id,
-            @RequestHeader("X-Member-Id") Long memberId
+            @CurrentMemberId Long memberId
     ) {
         BookResponse response = bookService.regenerateInviteCode(id, memberId);
         return ResponseEntity
@@ -104,7 +105,7 @@ public class BookController {
     })
     public ResponseEntity<ApiResult<Void>> deleteBook(
             @PathVariable Long id,
-            @RequestHeader("X-Member-Id") Long memberId
+            @CurrentMemberId Long memberId
     ) {
         bookService.deleteBook(id, memberId);
         return ResponseEntity
@@ -120,7 +121,7 @@ public class BookController {
             @ApiResponse(responseCode = "409", description = "이미 참여 중")
     })
     public ResponseEntity<ApiResult<BookMemberResponse>> joinBook(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Valid @RequestBody BookJoinRequest request
     ) {
         BookMemberResponse response = bookMemberService.joinBook(memberId, request);
@@ -138,7 +139,7 @@ public class BookController {
     })
     public ResponseEntity<ApiResult<List<BookMemberResponse>>> getBookMembers(
             @PathVariable Long id,
-            @RequestHeader("X-Member-Id") Long memberId
+            @CurrentMemberId Long memberId
     ) {
         List<BookMemberResponse> response = bookMemberService.getBookMembers(id, memberId);
         return ResponseEntity
@@ -158,7 +159,7 @@ public class BookController {
     public ResponseEntity<ApiResult<Void>> leaveOrRemoveMember(
             @PathVariable Long id,
             @PathVariable Long memberId,
-            @RequestHeader("X-Member-Id") Long requesterId
+            @CurrentMemberId Long requesterId
     ) {
         bookMemberService.leaveOrRemoveMember(id, requesterId, memberId);
         return ResponseEntity

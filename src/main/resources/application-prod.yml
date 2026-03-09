@@ -20,6 +20,11 @@ server:
 api:
   secret-key: ${API_SECRET_KEY:}
 
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
+
 vapid:
   public-key: ${VAPID_PUBLIC_KEY:}
   private-key: ${VAPID_PRIVATE_KEY:}

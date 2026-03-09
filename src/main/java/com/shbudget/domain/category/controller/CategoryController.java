@@ -4,6 +4,7 @@ import com.shbudget.domain.category.dto.request.CategoryCreateRequest;
 import com.shbudget.domain.category.dto.request.CategoryUpdateRequest;
 import com.shbudget.domain.category.dto.response.CategoryResponse;
 import com.shbudget.domain.category.service.CategoryService;
+import com.shbudget.global.auth.CurrentMemberId;
 import com.shbudget.global.common.ApiResult;
 import com.shbudget.global.common.ResponseStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +35,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "카테고리 이름 중복")
     })
     public ResponseEntity<ApiResult<CategoryResponse>> createCategory(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Valid @RequestBody CategoryCreateRequest request
     ) {
         CategoryResponse response = categoryService.createCategory(memberId, request);
@@ -50,7 +51,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "403", description = "가계부 멤버가 아님")
     })
     public ResponseEntity<ApiResult<List<CategoryResponse>>> getCategoryList(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId
     ) {
@@ -66,7 +67,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "카테고리를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<CategoryResponse>> getCategory(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "카테고리 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "가계부 ID", required = true)
@@ -85,7 +86,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "카테고리 이름 중복")
     })
     public ResponseEntity<ApiResult<CategoryResponse>> updateCategory(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "카테고리 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "가계부 ID", required = true)
@@ -105,7 +106,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "카테고리를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<Void>> deleteCategory(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "카테고리 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "가계부 ID", required = true)

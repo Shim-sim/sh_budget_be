@@ -4,6 +4,7 @@ import com.shbudget.domain.statistics.dto.response.CategoryStatisticsResponse;
 import com.shbudget.domain.statistics.dto.response.MemberContributionResponse;
 import com.shbudget.domain.statistics.dto.response.MonthlySummaryResponse;
 import com.shbudget.domain.statistics.service.StatisticsService;
+import com.shbudget.global.auth.CurrentMemberId;
 import com.shbudget.global.common.ApiResult;
 import com.shbudget.global.common.ResponseStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +33,7 @@ public class StatisticsController {
             @ApiResponse(responseCode = "403", description = "가계부 멤버가 아님")
     })
     public ResponseEntity<ApiResult<MonthlySummaryResponse>> getMonthlySummary(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Parameter(description = "년도", example = "2024", required = true)
@@ -51,7 +52,7 @@ public class StatisticsController {
             @ApiResponse(responseCode = "403", description = "가계부 멤버가 아님")
     })
     public ResponseEntity<ApiResult<CategoryStatisticsResponse>> getCategoryStatistics(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Parameter(description = "년도", example = "2024", required = true)
@@ -70,7 +71,7 @@ public class StatisticsController {
             @ApiResponse(responseCode = "403", description = "가계부 멤버가 아님")
     })
     public ResponseEntity<ApiResult<List<MemberContributionResponse>>> getMemberContribution(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Parameter(description = "년도", example = "2024", required = true)

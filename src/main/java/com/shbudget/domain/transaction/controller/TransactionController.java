@@ -5,6 +5,7 @@ import com.shbudget.domain.transaction.dto.request.TransactionUpdateRequest;
 import com.shbudget.domain.transaction.dto.response.TransactionResponse;
 import com.shbudget.domain.transaction.entity.TransactionType;
 import com.shbudget.domain.transaction.service.TransactionService;
+import com.shbudget.global.auth.CurrentMemberId;
 import com.shbudget.global.common.ApiResult;
 import com.shbudget.global.common.ResponseStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +37,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "자산을 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<TransactionResponse>> createTransaction(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Valid @RequestBody TransactionCreateRequest request
     ) {
         TransactionResponse response = transactionService.createTransaction(memberId, request);
@@ -52,7 +53,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "403", description = "가계부 멤버가 아님")
     })
     public ResponseEntity<ApiResult<List<TransactionResponse>>> getTransactionList(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Parameter(description = "월별 필터 (YYYY-MM)", example = "2024-05")
@@ -72,7 +73,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "거래를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<TransactionResponse>> getTransaction(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "거래 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "가계부 ID", required = true)
@@ -91,7 +92,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "거래를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<TransactionResponse>> updateTransaction(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "거래 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "가계부 ID", required = true)
@@ -110,7 +111,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "거래를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<Void>> deleteTransaction(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "거래 ID", required = true)
             @PathVariable Long id,
             @Parameter(description = "가계부 ID", required = true)

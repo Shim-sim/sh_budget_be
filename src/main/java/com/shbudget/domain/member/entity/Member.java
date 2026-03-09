@@ -21,14 +21,18 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(length = 255)
+    private String password;
+
     @Column(nullable = false, length = 20)
     private String nickname;
 
     @Column(length = 500)
     private String profileImageUrl;
 
-    private Member(String email, String nickname, String profileImageUrl) {
+    private Member(String email, String password, String nickname, String profileImageUrl) {
         this.email = email;
+        this.password = password;
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
     }
@@ -40,6 +44,14 @@ public class Member extends BaseEntity {
             .build();
     }
 
+    public static Member createWithPassword(String email, String password, String nickname) {
+        return Member.builder()
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .build();
+    }
+
     public void updateProfile(String nickname, String profileImageUrl) {
         if (nickname != null) {
             this.nickname = nickname;
@@ -47,5 +59,9 @@ public class Member extends BaseEntity {
         if (profileImageUrl != null) {
             this.profileImageUrl = profileImageUrl;
         }
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }

@@ -5,6 +5,7 @@ import com.shbudget.domain.asset.dto.AssetResponse;
 import com.shbudget.domain.asset.dto.AssetSummaryResponse;
 import com.shbudget.domain.asset.dto.AssetUpdateRequest;
 import com.shbudget.domain.asset.service.AssetService;
+import com.shbudget.global.auth.CurrentMemberId;
 import com.shbudget.global.common.ApiResult;
 import com.shbudget.global.common.ResponseStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +37,7 @@ public class AssetController {
             @ApiResponse(responseCode = "404", description = "가계부를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<AssetResponse>> createAsset(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Valid @RequestBody AssetCreateRequest request
@@ -55,7 +56,7 @@ public class AssetController {
             @ApiResponse(responseCode = "404", description = "가계부를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<List<AssetResponse>>> getAssets(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId
     ) {
@@ -71,7 +72,7 @@ public class AssetController {
             @ApiResponse(responseCode = "404", description = "자산을 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<AssetResponse>> getAsset(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Parameter(description = "자산 ID", required = true)
@@ -90,7 +91,7 @@ public class AssetController {
             @ApiResponse(responseCode = "404", description = "자산을 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<AssetResponse>> updateAsset(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Parameter(description = "자산 ID", required = true)
@@ -110,7 +111,7 @@ public class AssetController {
             @ApiResponse(responseCode = "404", description = "자산을 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<Void>> deleteAsset(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId,
             @Parameter(description = "자산 ID", required = true)
@@ -128,7 +129,7 @@ public class AssetController {
             @ApiResponse(responseCode = "404", description = "가계부를 찾을 수 없음")
     })
     public ResponseEntity<ApiResult<AssetSummaryResponse>> getTotalAssets(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Parameter(description = "가계부 ID", required = true)
             @RequestParam Long bookId
     ) {

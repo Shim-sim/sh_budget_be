@@ -3,6 +3,7 @@ package com.shbudget.domain.pushsubscription.controller;
 import com.shbudget.domain.pushsubscription.dto.request.PushSubscribeRequest;
 import com.shbudget.domain.pushsubscription.dto.request.PushUnsubscribeRequest;
 import com.shbudget.domain.pushsubscription.service.PushSubscriptionService;
+import com.shbudget.global.auth.CurrentMemberId;
 import com.shbudget.global.common.ApiResult;
 import com.shbudget.global.common.ResponseStatus;
 import com.shbudget.global.config.VapidConfig;
@@ -25,7 +26,7 @@ public class PushSubscriptionController {
     @PostMapping("/subscribe")
     @Operation(summary = "푸시 구독 등록", description = "웹 푸시 알림 구독을 등록합니다.")
     public ResponseEntity<ApiResult<Void>> subscribe(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Valid @RequestBody PushSubscribeRequest request
     ) {
         pushSubscriptionService.subscribe(memberId, request);
@@ -35,7 +36,7 @@ public class PushSubscriptionController {
     @PostMapping("/unsubscribe")
     @Operation(summary = "푸시 구독 해제", description = "웹 푸시 알림 구독을 해제합니다.")
     public ResponseEntity<ApiResult<Void>> unsubscribe(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @CurrentMemberId Long memberId,
             @Valid @RequestBody PushUnsubscribeRequest request
     ) {
         pushSubscriptionService.unsubscribe(memberId, request);
