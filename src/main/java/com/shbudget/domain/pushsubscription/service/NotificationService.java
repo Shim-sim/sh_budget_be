@@ -34,4 +34,22 @@ public class NotificationService {
             webPushService.sendPush(subscription, title, body);
         }
     }
+
+    /**
+     * 가계부의 모든 멤버에게 알림 발송 (등록자 포함)
+     */
+    public void notifyAllBookMembers(Long bookId, String title, String body) {
+        List<Long> memberIds = bookMemberRepository.findAllByBookId(bookId).stream()
+                .map(BookMember::getMemberId)
+                .toList();
+
+        if (memberIds.isEmpty()) {
+            return;
+        }
+
+        List<PushSubscription> subscriptions = pushSubscriptionRepository.findAllByMemberIdIn(memberIds);
+        for (PushSubscription subscription : subscriptions) {
+            webPushService.sendPush(subscription, title, body);
+        }
+    }
 }

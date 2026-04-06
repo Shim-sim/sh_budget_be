@@ -1,14 +1,9 @@
 package com.shbudget.domain.recurring.scheduler;
 
-import com.shbudget.domain.member.entity.Member;
-import com.shbudget.domain.member.repository.MemberRepository;
-import com.shbudget.domain.pushsubscription.entity.PushSubscription;
-import com.shbudget.domain.pushsubscription.repository.PushSubscriptionRepository;
-import com.shbudget.domain.pushsubscription.service.WebPushService;
+import com.shbudget.domain.pushsubscription.service.NotificationService;
 import com.shbudget.domain.recurring.entity.RecurringTransaction;
 import com.shbudget.domain.recurring.repository.RecurringTransactionRepository;
 import com.shbudget.domain.transaction.dto.request.TransactionCreateRequest;
-import com.shbudget.domain.transaction.entity.TransactionType;
 import com.shbudget.domain.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +22,7 @@ public class RecurringTransactionScheduler {
 
     private final RecurringTransactionRepository recurringRepository;
     private final TransactionService transactionService;
-    private final MemberRepository memberRepository;
-    private final PushSubscriptionRepository pushSubscriptionRepository;
-    private final WebPushService webPushService;
+    private final NotificationService notificationService;
 
     /**
      * 매월 1일 21:00 실행 - 활성화된 모든 반복 거래를 해당 월 설정일로 자동 생성
@@ -110,14 +103,10 @@ public class RecurringTransactionScheduler {
                 String body = String.format("2일 후 %s%s %,d원 예정입니다. 앱을 확인해주세요!",
                         memoText, typeLabel, recurring.getAmount());
 
-                // 등록자 본인에게 알림
-                List<PushSubscription> subscriptions =
-                        pushSubscriptionRepository.findAllByMemberIdIn(List.of(recurring.getCreatedBy()));
-                for (PushSubscription subscription : subscriptions) {
-                    webPushService.sendPush(subscription, "반복 거래 알림", body);
-                }
+                // 가계부의 모든 멤버에게 알림
+                notificationService.notifyAllBookMembers(recurring.getBookId(), "반복 거래 알림", body);
 
-                log.info("[반복 알림] 발송 완료 - id: {}, memberId: {}", recurring.getId(), recurring.getCreatedBy());
+                log.info("[반복 알림] 발송 완료 - id: {}, bookId: {}", recurring.getId(), recurring.getBookId());
             } catch (Exception e) {
                 log.error("[반복 알림] 발송 실패 - id: {}, error: {}", recurring.getId(), e.getMessage());
             }
